@@ -1,0 +1,137 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import { PromptCard } from "@/components/prompt-card";
+import { SearchBar } from "@/components/search-bar";
+import { TagPill } from "@/components/tag-pill";
+import type { PromptItem } from "@/data/site-data";
+
+type SortKey = "popular" | "latest" | "title";
+
+type PromptBrowserProps = {
+  prompts: PromptItem[];
+  filters: string[];
+  mode: "home" | "explore";
+  showSearch?: boolean;
+};
+
+const sortOptions: { value: SortKey; label: string }[] = [
+  { value: "popular", label: "最热门" },
+  { value: "latest", label: "最新加入" },
+  { value: "title", label: "名称排序" },
+];
+
+export function PromptBrowser({
+  prompts,
+  filters,
+  mode,
+  showSearch = true,
+}: PromptBrowserProps) {
+  const [keyword, setKeyword] = useState("");
+  const [activeFilter, setActiveFilter] = useState(filters[0] ?? "全部");
+  const [sortBy, setSortBy] = useState<SortKey>("popular");
+
+  const filteredPrompts = useMemo(() => {
+    const search = keyword.trim().toLowerCase();
+
+    const items = prompts.filter((item) => {
+      const matchesFilter =
+        activeFilter === "全部" || item.category === activeFilter;
+
+      const haystack = [
+        item.title,
+        item.category,
+        item.description,
+        item.useCase,
+        ...item.tags,
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      const matchesSearch = search.length === 0 || haystack.includes(search);
+
+      return matchesFilter && matchesSearch;
+    });
+
+    if (sortBy === "latest") {
+      return [...items].reverse();
+    }
+
+    if (sortBy === "title") {
+      return [...items].sort((a, b) => a.title.localeCompare(b.title, "zh-CN"));
+    }
+
+    return items;
+  }, [activeFilter, keyword, prompts, sortBy]);
+
+  return (
+    <>
+      {showSearch ? (
+        <div className={mode === "home" ? "mx-auto max-w-2xl" : "max-w-3xl"}>
+          <SearchBar
+            placeholder="搜索提示词、风格、场景..."
+            value={keyword}
+            onChange={setKeyword}
+          />
+        </div>
+      ) : null}
+
+      <div className={`${showSearch ? "mt-5" : ""} flex flex-wrap gap-3`}>
+        {filters.map((tag) => (
+          <TagPill
+            key={tag}
+            label={tag}
+            active={tag === activeFilter}
+            onClick={() => setActiveFilter(tag)}
+          />
+        ))}
+      </div>
+
+      {mode === "explore" ? (
+        <div className="mt-8 flex flex-col gap-4 text-sm text-[var(--color-muted)] lg:flex-row lg:items-center lg:justify-between">
+          <span>{filteredPrompts.length} 个精选案例</span>
+
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <span>
+              {activeFilter === "全部" ? "当前分类：全部" : `当前分类：${activeFilter}`}
+            </span>
+
+            <div className="soft-panel inline-flex w-fit flex-wrap gap-2 rounded-full p-1">
+              {sortOptions.map((option) => {
+                const active = option.value === sortBy;
+
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setSortBy(option.value)}
+                    className={[
+                      "rounded-full px-4 py-2 text-sm transition",
+                      active
+                        ? "bg-[var(--color-brand)] text-white shadow-[0_8px_20px_rgba(31,138,112,0.18)]"
+                        : "text-[var(--color-muted)] hover:bg-white/80 hover:text-[var(--color-ink)]",
+                    ].join(" ")}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      <div className={`masonry-grid ${mode === "home" ? "mt-10" : "mt-6"}`}>
+        {filteredPrompts.map((item) => (
+          <PromptCard key={item.slug} item={item} />
+        ))}
+      </div>
+
+      {filteredPrompts.length === 0 ? (
+        <div className="soft-panel mt-6 rounded-[24px] px-6 py-8 text-center text-sm text-[var(--color-muted)]">
+          没有找到符合条件的案例，试试换个关键词或分类。
+        </div>
+      ) : null}
+    </>
+  );
+}
