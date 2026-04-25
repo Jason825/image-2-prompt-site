@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { PromptCard } from "@/components/prompt-card";
 import { SearchBar } from "@/components/search-bar";
 import type { PromptItem } from "@/data/site-data";
@@ -34,45 +34,66 @@ export function PromptBrowser({
   const [sortBy, setSortBy] = useState<SortKey>("popular");
   const [statsMap, setStatsMap] = useState<Record<string, PromptStatRow>>({});
 
-  useEffect(() => {
-    let cancelled = false;
+  const loadStats = useCallback(async () => {
+    try {
+      const response = await fetch("/api/prompt-stats", {
+        cache: "no-store",
+      });
 
-    async function loadStats() {
-      try {
-        const response = await fetch("/api/prompt-stats", {
-          cache: "no-store",
-        });
-
-        if (!response.ok) {
-          return;
-        }
-
-        const payload = (await response.json()) as {
-          enabled?: boolean;
-          items?: PromptStatRow[];
-        };
-
-        if (cancelled || !payload.items) {
-          return;
-        }
-
-        const nextMap = payload.items.reduce<Record<string, PromptStatRow>>((acc, item) => {
-          acc[item.slug] = item;
-          return acc;
-        }, {});
-
-        setStatsMap(nextMap);
-      } catch {
-        // Keep the fallback order when stats are temporarily unavailable.
+      if (!response.ok) {
+        return;
       }
-    }
 
-    void loadStats();
+      const payload = (await response.json()) as {
+        enabled?: boolean;
+        items?: PromptStatRow[];
+      };
+
+      if (!payload.items) {
+        return;
+      }
+
+      const nextMap = payload.items.reduce<Record<string, PromptStatRow>>((acc, item) => {
+        acc[item.slug] = item;
+        return acc;
+      }, {});
+
+      setStatsMap(nextMap);
+    } catch {
+      // Keep fallback sorting when stats are unavailable.
+    }
+  }, []);
+
+  useEffect(() => {
+    const initialTimer = window.setTimeout(() => {
+      void loadStats();
+    }, 0);
+
+    const handleFocus = () => {
+      void loadStats();
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        void loadStats();
+      }
+    };
+
+    const handlePageShow = () => {
+      void loadStats();
+    };
+
+    window.addEventListener("focus", handleFocus);
+    window.addEventListener("pageshow", handlePageShow);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
-      cancelled = true;
+      window.clearTimeout(initialTimer);
+      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener("pageshow", handlePageShow);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, []);
+  }, [loadStats]);
 
   const filteredPrompts = useMemo(() => {
     const search = keyword.trim().toLowerCase();

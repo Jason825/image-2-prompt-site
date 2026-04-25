@@ -1,12 +1,11 @@
 import Link from "next/link";
-import { PromptCard } from "@/components/prompt-card";
+import { HomeFeaturedPrompts } from "@/components/home-featured-prompts";
 import { RecentViews } from "@/components/recent-views";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { collections, getCategories, prompts } from "@/data/site-data";
 
 export default function HomePage() {
-  const featuredPrompts = prompts.slice(0, 6);
   const categories = getCategories();
 
   return (
@@ -24,8 +23,8 @@ export default function HomePage() {
                   把好用的 Image 2.0 提示词整理成一个真正能逛的内容站
                 </h1>
                 <p className="mt-5 max-w-2xl text-base leading-8 text-[var(--color-muted)]">
-                  浏览真实案例图，快速找到可复用提示词，并按分类、标签和专题继续深挖。
-                  首页负责带你理解这站有什么，搜索则统一放在导航里，方便全站随时使用。
+                  浏览真实案例图，快速找到可复用提示词，并按分类和专题继续深挖。
+                  首页会优先展示当前最热门的内容，帮助你回到页面时直接看到最新排序结果。
                 </p>
                 <div className="mt-8 flex flex-wrap gap-3">
                   <Link
@@ -65,10 +64,10 @@ export default function HomePage() {
           <div className="mb-6 flex items-end justify-between gap-4">
             <div>
               <p className="text-sm uppercase tracking-[0.18em] text-[var(--color-brand-deep)]">
-                精选案例
+                热门精选
               </p>
               <h2 className="mt-2 text-3xl font-semibold tracking-tight">
-                先看一批最能代表站点方向的内容
+                回到首页时，优先看到最新热度最高的内容
               </h2>
             </div>
             <Link
@@ -79,11 +78,7 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="masonry-grid">
-            {featuredPrompts.map((item) => (
-              <PromptCard key={item.slug} item={item} />
-            ))}
-          </div>
+          <HomeFeaturedPrompts prompts={prompts} />
         </section>
 
         <section className="page-shell pt-14">
