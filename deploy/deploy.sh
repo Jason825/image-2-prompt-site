@@ -10,6 +10,7 @@ LOCK_FILE="${PROJECT_DIR}/deploy/deploy.lock"
 LOG_FILE="${LOG_DIR}/deploy.log"
 BRANCH="${DEPLOY_BRANCH:-main}"
 REMOTE_NAME="${DEPLOY_REMOTE:-origin}"
+SKIP_GIT_PULL="${SKIP_GIT_PULL:-0}"
 
 mkdir -p "${LOG_DIR}"
 
@@ -47,7 +48,12 @@ fi
 
 log "Start deployment for ${PROJECT_DIR}"
 
-run git -C "${PROJECT_DIR}" fetch "${REMOTE_NAME}" "${BRANCH}"
-run git -C "${PROJECT_DIR}" pull --ff-only "${REMOTE_NAME}" "${BRANCH}"
+if [[ "${SKIP_GIT_PULL}" != "1" ]]; then
+  run git -C "${PROJECT_DIR}" fetch "${REMOTE_NAME}" "${BRANCH}"
+  run git -C "${PROJECT_DIR}" pull --ff-only "${REMOTE_NAME}" "${BRANCH}"
+else
+  log "Skip git pull because SKIP_GIT_PULL=1"
+fi
+
 run sudo docker compose -f "${WEB_DIR}/docker-compose.yml" up -d --build
 run sudo docker compose -f "${WEB_DIR}/docker-compose.yml" ps
