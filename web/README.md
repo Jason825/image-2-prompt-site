@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ImagePromptive Web
 
-## Getting Started
+这是 `ImagePromptive` 的前端与接口项目，适合部署到腾讯云轻量应用服务器。
 
-First, run the development server:
+## 本地开发
+
+进入项目目录后运行：
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+默认访问：
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 必要环境变量
 
-## Learn More
+本项目当前最关键的环境变量是：
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+DATABASE_URL=postgresql://postgres:your_password@127.0.0.1:5432/imagepromptive
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+样例文件见：
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+.env.example
+```
 
-## Deploy on Vercel
+## Docker 部署
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+当前仓库已经内置：
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `Dockerfile`
+- `docker-compose.yml`
+- `nginx/default.conf`
+- `db/prompt_stats.sql`
+
+在服务器上进入 `web` 目录后，可直接启动：
+
+```bash
+docker compose up -d --build
+```
+
+启动后默认结构是：
+
+- `Next.js` 应用容器
+- `Postgres` 数据库容器
+- `Nginx` 反向代理容器
+
+默认对外端口：
+
+```bash
+80
+```
+
+## 腾讯云服务器建议
+
+推荐环境：
+
+- Ubuntu 22.04
+- 已安装 Docker / Docker Compose
+- 开放 80 端口
+
+如果后续要绑定域名和 HTTPS，可以继续在 Nginx 层接入证书。
