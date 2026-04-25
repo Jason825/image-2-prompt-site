@@ -1,6 +1,7 @@
 ﻿import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { MasonryGrid } from "@/components/masonry-grid";
 import { PageCta } from "@/components/page-cta";
 import { PromptCard } from "@/components/prompt-card";
 import { SiteFooter } from "@/components/site-footer";
@@ -89,11 +90,11 @@ export default async function CategoryDetailPage({
             </Link>
           </div>
 
-          <div className="masonry-grid">
+          <MasonryGrid>
             {items.map((item) => (
               <PromptCard key={item.slug} item={item} showView />
             ))}
-          </div>
+          </MasonryGrid>
         </section>
 
         <PageCta

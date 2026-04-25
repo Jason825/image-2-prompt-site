@@ -5,7 +5,8 @@ import type { PromptItem } from "@/data/site-data";
 import { trackPromptEvent } from "@/lib/track-prompt-event";
 
 const STORAGE_KEY = "imagepromptive-recent-views";
-const SESSION_TRACK_KEY = "imagepromptive-tracked-views";
+const VIEW_TRACK_KEY = "imagepromptive-tracked-view-times";
+const VIEW_TRACK_COOLDOWN_MS = 60 * 1000;
 
 type StoredView = {
   slug: string;
@@ -39,16 +40,21 @@ export function ViewTracker({ prompt }: { prompt: PromptItem }) {
     }
 
     try {
-      const raw = window.sessionStorage.getItem(SESSION_TRACK_KEY);
-      const tracked = raw ? (JSON.parse(raw) as string[]) : [];
+      const raw = window.localStorage.getItem(VIEW_TRACK_KEY);
+      const tracked = raw ? (JSON.parse(raw) as Record<string, number>) : {};
+      const now = Date.now();
+      const lastTrackedAt = tracked[prompt.slug] ?? 0;
 
-      if (tracked.includes(prompt.slug)) {
+      if (now - lastTrackedAt < VIEW_TRACK_COOLDOWN_MS) {
         return;
       }
 
-      window.sessionStorage.setItem(
-        SESSION_TRACK_KEY,
-        JSON.stringify([...tracked, prompt.slug]),
+      window.localStorage.setItem(
+        VIEW_TRACK_KEY,
+        JSON.stringify({
+          ...tracked,
+          [prompt.slug]: now,
+        }),
       );
       void trackPromptEvent({ slug: prompt.slug, eventType: "view" });
     } catch {

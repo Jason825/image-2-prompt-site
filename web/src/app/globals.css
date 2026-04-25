@@ -84,14 +84,34 @@ a {
   margin-bottom: 20px;
 }
 
+.masonry-grid-true {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-auto-rows: 8px;
+  gap: 20px;
+  align-items: start;
+}
+
+.masonry-grid-true > .masonry-item {
+  margin-bottom: 0;
+}
+
 @media (min-width: 768px) {
   .masonry-grid {
     column-count: 2;
+  }
+
+  .masonry-grid-true {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 1080px) {
   .masonry-grid {
     column-count: 3;
+  }
+
+  .masonry-grid-true {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }

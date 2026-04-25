@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { MasonryGrid } from "@/components/masonry-grid";
 import { PromptCard } from "@/components/prompt-card";
 import { SearchBar } from "@/components/search-bar";
 import type { PromptItem } from "@/data/site-data";
@@ -208,11 +209,11 @@ export function PromptBrowser({
         </div>
       ) : null}
 
-      <div className={`masonry-grid ${mode === "home" ? "mt-10" : "mt-6"}`}>
+      <MasonryGrid className={mode === "home" ? "mt-10" : "mt-6"}>
         {filteredPrompts.map((item) => (
           <PromptCard key={item.slug} item={item} />
         ))}
-      </div>
+      </MasonryGrid>
 
       {filteredPrompts.length === 0 ? (
         <div className="soft-panel mt-6 rounded-[24px] px-6 py-8 text-center text-sm text-[var(--color-muted)]">

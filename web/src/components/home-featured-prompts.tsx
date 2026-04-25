@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { MasonryGrid } from "@/components/masonry-grid";
 import { PromptCard } from "@/components/prompt-card";
 import type { PromptItem } from "@/data/site-data";
 import type { PromptStatRow } from "@/lib/prompt-stats";
@@ -92,10 +93,10 @@ export function HomeFeaturedPrompts({ prompts }: HomeFeaturedPromptsProps) {
   }, [prompts, statsMap]);
 
   return (
-    <div className="masonry-grid">
+    <MasonryGrid>
       {featuredPrompts.map((item) => (
         <PromptCard key={item.slug} item={item} />
       ))}
-    </div>
+    </MasonryGrid>
   );
 }
