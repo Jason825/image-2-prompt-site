@@ -3,6 +3,7 @@
   title: string;
   category: string;
   tags: string[];
+  popularityScore?: number;
   description: string;
   prompt: string;
   negativePrompt?: string;
@@ -52,10 +53,7 @@ export type SourceMeta = {
 export const navItems = [
   { href: "/explore", label: "浏览" },
   { href: "/categories", label: "分类" },
-  { href: "/tags", label: "标签" },
   { href: "/collections", label: "专题" },
-  { href: "/favorites", label: "收藏" },
-  { href: "/about", label: "关于" },
   { href: "/updates", label: "更新" },
 ];
 
@@ -74,6 +72,7 @@ export const prompts: PromptItem[] = [
     title: "深夜便利店街拍场景",
     category: "摄影",
     tags: ["写实", "夜景"],
+    popularityScore: 96,
     description:
       "深夜便利店门口的真实群像，适合测试玻璃反射、城市灯光和普通人状态。",
     prompt:
@@ -95,6 +94,7 @@ export const prompts: PromptItem[] = [
     title: "手写笔记本实拍",
     category: "摄影",
     tags: ["实拍", "文具"],
+    popularityScore: 88,
     description:
       "iPhone 质感的随手拍，测试自然光、手写细节和真实桌面氛围。",
     prompt:
@@ -115,6 +115,7 @@ export const prompts: PromptItem[] = [
     title: "电商 App 首页截图",
     category: "界面",
     tags: ["电商", "界面"],
+    popularityScore: 98,
     description:
       "高密度中文和真实商业 UI 的代表案例，适合做站内重点展示。",
     prompt:
@@ -135,6 +136,7 @@ export const prompts: PromptItem[] = [
     title: "音乐播放器界面",
     category: "界面",
     tags: ["音乐", "中文排版"],
+    popularityScore: 86,
     description:
       "移动端播放器界面案例，适合展示深色 UI、歌词区和细节控件表现。",
     prompt:
@@ -155,6 +157,7 @@ export const prompts: PromptItem[] = [
     title: "中式茶饮新品发布海报",
     category: "海报",
     tags: ["海报", "品牌视觉"],
+    popularityScore: 94,
     description:
       "高完成度商业海报案例，适合放在首页提升视觉质感。",
     prompt:
@@ -175,6 +178,7 @@ export const prompts: PromptItem[] = [
     title: "一杯咖啡的旅程信息图",
     category: "图表",
     tags: ["信息图", "教育"],
+    popularityScore: 91,
     description:
       "信息组织能力很强的一类案例，适合专题页和详情页承接。",
     prompt:
@@ -195,6 +199,7 @@ export const prompts: PromptItem[] = [
     title: "官方角色设定参考页",
     category: "角色",
     tags: ["角色设定", "参考页"],
+    popularityScore: 84,
     description:
       "角色一致性与设定页布局的代表案例，适合补齐风格维度。",
     prompt:
@@ -215,6 +220,7 @@ export const prompts: PromptItem[] = [
     title: "高端护肤品海报",
     category: "海报",
     tags: ["护肤", "商业海报"],
+    popularityScore: 90,
     description:
       "高客单价护肤品牌视觉案例，适合展示卖点层级、赠品信息和价格排布。",
     prompt:
@@ -235,6 +241,7 @@ export const prompts: PromptItem[] = [
     title: "核心人物关系图",
     category: "图表",
     tags: ["关系图", "信息设计"],
+    popularityScore: 79,
     description:
       "把叙事关系可视化成海报式信息图，适合世界观和角色关系整理。",
     prompt:
@@ -255,6 +262,7 @@ export const prompts: PromptItem[] = [
     title: "博物馆图录风拆解信息图",
     category: "图表",
     tags: ["博物馆", "拆解图"],
+    popularityScore: 82,
     description:
       "图录式长信息版面，兼顾主视觉、结构拆解、材质说明和文化解释。",
     prompt:
@@ -275,6 +283,7 @@ export const prompts: PromptItem[] = [
     title: "电影拼贴海报",
     category: "海报",
     tags: ["拼贴", "电影感"],
+    popularityScore: 80,
     description:
       "适合做作品宇宙、IP 内容聚合和多画面叙事型的海报输出。",
     prompt:
@@ -295,6 +304,7 @@ export const prompts: PromptItem[] = [
     title: "iPhone 原生质感地铁站抓拍",
     category: "摄影",
     tags: ["抓拍", "通勤"],
+    popularityScore: 76,
     description:
       "手机直出的地铁站抓拍，适合测试运动模糊、通勤氛围和真实手机成像。",
     prompt:
@@ -315,6 +325,7 @@ export const prompts: PromptItem[] = [
     title: "米粒微缩文字",
     category: "摄影",
     tags: ["微距", "创意"],
+    popularityScore: 72,
     description:
       "极致微距创意图，适合测试模型在极小文字和材质细节上的表现。",
     prompt:
@@ -335,6 +346,7 @@ export const prompts: PromptItem[] = [
     title: "100 个像素风物品网格",
     category: "图表",
     tags: ["像素风", "网格"],
+    popularityScore: 78,
     description:
       "100 格像素物件总览图，适合测试批量元素生成、一致风格与标签清晰度。",
     prompt:
@@ -355,6 +367,7 @@ export const prompts: PromptItem[] = [
     title: "YouTube 时空穿越视频截图",
     category: "界面",
     tags: ["YouTube", "视频截图"],
+    popularityScore: 74,
     description:
       "带有内容感的视频页面截图，适合展示平台界面和画中画叙事能力。",
     prompt:
@@ -375,6 +388,7 @@ export const prompts: PromptItem[] = [
     title: "宋代社交媒体信息流",
     category: "界面",
     tags: ["古今融合", "社媒"],
+    popularityScore: 87,
     description:
       "把宋代人物内容放进现代社交媒体界面，兼具趣味性和高信息密度。",
     prompt:
@@ -395,6 +409,7 @@ export const prompts: PromptItem[] = [
     title: "自定义风格 UI 设计系统",
     category: "界面",
     tags: ["设计系统", "组件"],
+    popularityScore: 83,
     description:
       "一张图展示桌面端、移动端和组件库，适合做界面类能力的总览案例。",
     prompt:
@@ -415,6 +430,7 @@ export const prompts: PromptItem[] = [
     title: "百科风雪豹知识卡片",
     category: "图表",
     tags: ["百科", "知识卡片"],
+    popularityScore: 77,
     description:
       "更适合社媒传播的百科风长卡，兼顾主视觉、模块化信息和可读性。",
     prompt:
@@ -435,6 +451,7 @@ export const prompts: PromptItem[] = [
     title: "新手胸部训练信息图",
     category: "图表",
     tags: ["健身", "训练计划"],
+    popularityScore: 73,
     description:
       "实用型训练长图，适合测试信息结构、动作模块和中文卡片化表达。",
     prompt:
@@ -458,22 +475,33 @@ export const collections: CollectionItem[] = [
     title: "摄影与写实",
     description: "真实感、光线、随手拍质感与生活场景重建。",
     tags: ["摄影", "写实"],
-    count: 2,
+    count: 4,
     imageSrc: "/examples/convenience-store-night-scene-01-4b322ed4.jpg",
     summary:
       "适合想测试真实生活切片、夜景氛围、拍摄设备质感和自然人物状态的场景。",
-    promptSlugs: ["convenience-store-night-scene", "handwritten-notebook-photo"],
+    promptSlugs: [
+      "convenience-store-night-scene",
+      "handwritten-notebook-photo",
+      "iphone-subway-station-candid",
+      "rice-micro-text",
+    ],
   },
   {
     slug: "ui-and-social",
     title: "UI / 社媒 / 界面",
     description: "中文排版、真实 App 逻辑和界面细节表现。",
     tags: ["UI", "中文"],
-    count: 2,
+    count: 5,
     imageSrc: "/examples/e-commerce-app-homepage-01-cfebfd01.jpg",
     summary:
       "重点看高密度中文、小字可读性、真实交互层级和商业化界面完成度。",
-    promptSlugs: ["ecommerce-app-homepage", "music-player-interface"],
+    promptSlugs: [
+      "ecommerce-app-homepage",
+      "music-player-interface",
+      "youtube-time-travel-video",
+      "song-dynasty-social-feed",
+      "custom-ui-design-system",
+    ],
   },
   {
     slug: "poster-and-brand",
@@ -491,7 +519,7 @@ export const collections: CollectionItem[] = [
     title: "信息图 / 教育 / 文档",
     description: "模块化信息设计、知识卡片和长信息表达。",
     tags: ["信息图", "知识"],
-    count: 3,
+    count: 6,
     imageSrc: "/examples/coffee-journey-infographic-01-c4960399.jpg",
     summary:
       "重点测试信息组织、模块结构、长图设计和知识型视觉内容表达。",
@@ -499,6 +527,9 @@ export const collections: CollectionItem[] = [
       "coffee-journey-infographic",
       "character-relationship-map",
       "museum-catalog-infographic",
+      "pixel-art-items-grid",
+      "encyclopedia-snow-leopard",
+      "fitness-chest-infographic",
     ],
   },
   {

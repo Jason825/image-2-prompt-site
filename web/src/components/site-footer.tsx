@@ -9,13 +9,13 @@ export function SiteFooter() {
             © {year} ImagePromptive. All rights reserved.
           </p>
           <p className="mt-1">
-            本站用于展示 Image 2.0 提示词与图片案例，仅用于产品验证与内容展示。
+            本站用于整理和展示 Image 2.0 提示词与案例图片，当前阶段以产品验证和内容展示为主。
           </p>
         </div>
 
         <div className="text-left md:text-right">
-          <p>联系邮箱：763484227@qq.com</p>
-          <p className="mt-1">沪ICP备 2026000000 号-1</p>
+          <p>联系邮箱：63484227@qq.com</p>
+          <p className="mt-1">站点仍在持续整理与迭代中。</p>
         </div>
       </div>
     </footer>

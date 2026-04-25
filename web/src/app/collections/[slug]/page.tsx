@@ -1,11 +1,10 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageCta } from "@/components/page-cta";
 import { PromptCard } from "@/components/prompt-card";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { TagPill } from "@/components/tag-pill";
 import {
   collections,
   getCollectionBySlug,
@@ -36,7 +35,7 @@ export default async function CollectionDetailPage({
       <main className="pb-6">
         <section className="page-shell pt-10">
           <div className="text-sm text-[var(--color-muted)]">
-            <Link href="/">首页</Link> / <Link href="/collections">专题</Link> / {" "}
+            <Link href="/">首页</Link> / <Link href="/collections">专题</Link> /{" "}
             <span>{collection.title}</span>
           </div>
 
@@ -65,12 +64,6 @@ export default async function CollectionDetailPage({
               <p className="mt-4 text-base leading-8 text-[var(--color-muted)]">
                 {collection.summary}
               </p>
-
-              <div className="mt-6 flex flex-wrap gap-3">
-                {collection.tags.map((tag, index) => (
-                  <TagPill key={tag} label={tag} active={index === 0} />
-                ))}
-              </div>
 
               <div className="mt-8 flex flex-wrap gap-6 text-sm text-[var(--color-muted)]">
                 <span>{items.length} 个精选案例</span>
@@ -105,11 +98,7 @@ export default async function CollectionDetailPage({
           </div>
         </section>
 
-        <PageCta
-          title="继续浏览更多专题与提示词"
-          href="/collections"
-          label="返回专题页"
-        />
+        <PageCta title="继续浏览更多专题与提示词" href="/collections" label="返回专题页" />
       </main>
       <SiteFooter />
     </>

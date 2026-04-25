@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { CopyButton } from "./copy-button";
-import { TagPill } from "./tag-pill";
 import type { PromptItem } from "@/data/site-data";
 
 export function PromptCard({
@@ -26,14 +25,9 @@ export function PromptCard({
           </div>
 
           <div className="space-y-4 p-5">
-            <div className="flex flex-wrap gap-2">
-              {item.tags.slice(0, 2).map((tag, index) => (
-                <TagPill key={tag} label={tag} active={index === 0} />
-              ))}
-            </div>
-
             <div>
-              <h3 className="text-xl font-semibold tracking-tight">{item.title}</h3>
+              <p className="text-sm text-[var(--color-brand-deep)]">{item.category}</p>
+              <h3 className="mt-2 text-xl font-semibold tracking-tight">{item.title}</h3>
               <p className="mt-2 text-sm leading-6 text-[var(--color-muted)]">
                 {item.description}
               </p>
@@ -45,11 +39,7 @@ export function PromptCard({
         </Link>
 
         <div className="flex flex-wrap items-center gap-3 px-5 pb-5">
-          <CopyButton
-            text={item.prompt}
-            label="复制提示词"
-            copiedLabel="已复制提示词"
-          />
+          <CopyButton text={item.prompt} label="复制提示词" copiedLabel="已复制提示词" />
           <a
             href={item.imageSrc}
             download

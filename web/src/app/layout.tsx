@@ -14,7 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "ImagePromptive",
-  description: "精选提示词与效果图，快速找到能直接用的视觉灵感。",
+  description:
+    "精选 Image 2.0 提示词与案例图片，帮助你更快找到可复用的视觉灵感。",
   icons: {
     icon: "/logo-mark.svg",
   },
@@ -30,7 +31,7 @@ export default function RootLayout({
       lang="zh-CN"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[var(--color-cream)] text-[var(--color-ink)]">
+      <body className="flex min-h-full flex-col bg-[var(--color-cream)] text-[var(--color-ink)]">
         {children}
       </body>
     </html>

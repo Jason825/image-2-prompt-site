@@ -6,7 +6,6 @@ import { notFound } from "next/navigation";
 import { PageCta } from "@/components/page-cta";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { TagPill } from "@/components/tag-pill";
 import { getRelatedPrompts, prompts } from "@/data/site-data";
 
 export function generateStaticParams() {
@@ -41,17 +40,10 @@ export default async function PromptDetailPage({
             <p className="text-sm uppercase tracking-[0.2em] text-[var(--color-brand-deep)]">
               {prompt.category}
             </p>
-            <h1 className="mt-3 text-5xl font-semibold tracking-tight">
-              {prompt.title}
-            </h1>
+            <h1 className="mt-3 text-5xl font-semibold tracking-tight">{prompt.title}</h1>
             <p className="mt-4 text-base leading-7 text-[var(--color-muted)]">
               {prompt.description}
             </p>
-            <div className="mt-5 flex flex-wrap gap-3">
-              {prompt.tags.map((tag, index) => (
-                <TagPill key={tag} label={tag} active={index === 0} />
-              ))}
-            </div>
           </div>
 
           <div className="mt-10 grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
@@ -89,14 +81,16 @@ export default async function PromptDetailPage({
                 </div>
               </section>
 
-              <section className="soft-panel rounded-[28px] p-6">
-                <p className="text-sm uppercase tracking-[0.18em] text-[var(--color-brand-deep)]">
-                  反向提示词
-                </p>
-                <p className="mt-4 text-sm leading-7 text-[var(--color-muted)]">
-                  {prompt.negativePrompt}
-                </p>
-              </section>
+              {prompt.negativePrompt ? (
+                <section className="soft-panel rounded-[28px] p-6">
+                  <p className="text-sm uppercase tracking-[0.18em] text-[var(--color-brand-deep)]">
+                    反向提示词
+                  </p>
+                  <p className="mt-4 text-sm leading-7 text-[var(--color-muted)]">
+                    {prompt.negativePrompt}
+                  </p>
+                </section>
+              ) : null}
 
               <section className="soft-panel rounded-[28px] p-6">
                 <p className="text-sm uppercase tracking-[0.18em] text-[var(--color-brand-deep)]">
@@ -104,27 +98,19 @@ export default async function PromptDetailPage({
                 </p>
                 <div className="mt-4 space-y-4 text-sm leading-7 text-[var(--color-muted)]">
                   <p>
-                    <span className="font-medium text-[var(--color-ink)]">
-                      适合场景：
-                    </span>{" "}
+                    <span className="font-medium text-[var(--color-ink)]">适合场景：</span>{" "}
                     {prompt.useCase}
                   </p>
                   <p>
-                    <span className="font-medium text-[var(--color-ink)]">
-                      可替换内容：
-                    </span>{" "}
+                    <span className="font-medium text-[var(--color-ink)]">可替换内容：</span>{" "}
                     主体、材质、配色、场景道具。
                   </p>
                   <p>
-                    <span className="font-medium text-[var(--color-ink)]">
-                      画幅比例：
-                    </span>{" "}
+                    <span className="font-medium text-[var(--color-ink)]">画幅比例：</span>{" "}
                     {prompt.ratio}
                   </p>
                   <p>
-                    <span className="font-medium text-[var(--color-ink)]">
-                      所属专题：
-                    </span>{" "}
+                    <span className="font-medium text-[var(--color-ink)]">所属专题：</span>{" "}
                     <Link
                       href={`/collections/${prompt.collectionSlug}`}
                       className="text-[var(--color-brand-deep)] hover:underline"
@@ -133,9 +119,7 @@ export default async function PromptDetailPage({
                     </Link>
                   </p>
                   <p>
-                    <span className="font-medium text-[var(--color-ink)]">
-                      来源：
-                    </span>{" "}
+                    <span className="font-medium text-[var(--color-ink)]">来源：</span>{" "}
                     <Link
                       href="/sources"
                       className="text-[var(--color-brand-deep)] hover:underline"
@@ -177,11 +161,7 @@ export default async function PromptDetailPage({
                   />
                 </div>
                 <div className="space-y-2 p-4">
-                  <div className="flex flex-wrap gap-2">
-                    {item.tags.slice(0, 2).map((tag, index) => (
-                      <TagPill key={tag} label={tag} active={index === 0} />
-                    ))}
-                  </div>
+                  <p className="text-sm text-[var(--color-brand-deep)]">{item.category}</p>
                   <h3 className="text-lg font-semibold tracking-tight">{item.title}</h3>
                   <p className="line-clamp-2 text-sm leading-6 text-[var(--color-muted)]">
                     {item.description}
@@ -192,11 +172,7 @@ export default async function PromptDetailPage({
           </div>
         </section>
 
-        <PageCta
-          title="继续发现更多提示词案例"
-          href="/explore"
-          label="浏览提示词"
-        />
+        <PageCta title="继续发现更多提示词案例" href="/explore" label="浏览提示词" />
       </main>
       <SiteFooter />
     </>

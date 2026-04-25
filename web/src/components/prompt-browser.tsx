@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import { PromptCard } from "@/components/prompt-card";
 import { SearchBar } from "@/components/search-bar";
-import { TagPill } from "@/components/tag-pill";
 import type { PromptItem } from "@/data/site-data";
 
 type SortKey = "popular" | "latest" | "title";
@@ -13,6 +12,7 @@ type PromptBrowserProps = {
   filters: string[];
   mode: "home" | "explore";
   showSearch?: boolean;
+  initialKeyword?: string;
 };
 
 const sortOptions: { value: SortKey; label: string }[] = [
@@ -26,8 +26,9 @@ export function PromptBrowser({
   filters,
   mode,
   showSearch = true,
+  initialKeyword = "",
 }: PromptBrowserProps) {
-  const [keyword, setKeyword] = useState("");
+  const [keyword, setKeyword] = useState(initialKeyword);
   const [activeFilter, setActiveFilter] = useState(filters[0] ?? "全部");
   const [sortBy, setSortBy] = useState<SortKey>("popular");
 
@@ -35,8 +36,7 @@ export function PromptBrowser({
     const search = keyword.trim().toLowerCase();
 
     const items = prompts.filter((item) => {
-      const matchesFilter =
-        activeFilter === "全部" || item.category === activeFilter;
+      const matchesFilter = activeFilter === "全部" || item.category === activeFilter;
 
       const haystack = [
         item.title,
@@ -61,7 +61,12 @@ export function PromptBrowser({
       return [...items].sort((a, b) => a.title.localeCompare(b.title, "zh-CN"));
     }
 
-    return items;
+    return [...items].sort((a, b) => {
+      const scoreDiff = (b.popularityScore ?? 0) - (a.popularityScore ?? 0);
+      if (scoreDiff !== 0) return scoreDiff;
+      return prompts.findIndex((item) => item.slug === a.slug) -
+        prompts.findIndex((item) => item.slug === b.slug);
+    });
   }, [activeFilter, keyword, prompts, sortBy]);
 
   return (
@@ -77,14 +82,25 @@ export function PromptBrowser({
       ) : null}
 
       <div className={`${showSearch ? "mt-5" : ""} flex flex-wrap gap-3`}>
-        {filters.map((tag) => (
-          <TagPill
-            key={tag}
-            label={tag}
-            active={tag === activeFilter}
-            onClick={() => setActiveFilter(tag)}
-          />
-        ))}
+        {filters.map((filter) => {
+          const active = filter === activeFilter;
+
+          return (
+            <button
+              key={filter}
+              type="button"
+              onClick={() => setActiveFilter(filter)}
+              className={[
+                "rounded-full border px-4 py-2 text-sm transition",
+                active
+                  ? "border-[var(--color-brand)] bg-[var(--color-brand-soft)] text-[var(--color-brand-deep)]"
+                  : "border-[var(--color-line)] bg-white/70 text-[var(--color-muted)] hover:border-[var(--color-brand)]",
+              ].join(" ")}
+            >
+              {filter}
+            </button>
+          );
+        })}
       </div>
 
       {mode === "explore" ? (

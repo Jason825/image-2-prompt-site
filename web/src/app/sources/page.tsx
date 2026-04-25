@@ -13,11 +13,9 @@ export default function SourcesPage() {
             <p className="text-sm uppercase tracking-[0.2em] text-[var(--color-brand-deep)]">
               来源
             </p>
-            <h1 className="mt-3 text-5xl font-semibold tracking-tight">
-              素材来源说明
-            </h1>
+            <h1 className="mt-3 text-5xl font-semibold tracking-tight">素材来源说明</h1>
             <p className="mt-4 text-base leading-7 text-[var(--color-muted)]">
-              这里记录站内案例当前主要整理来源，方便后续继续扩充、追溯和完善内容结构。
+              这里记录站内案例当前的主要整理来源，方便后续继续扩充、追溯和完善内容结构。
             </p>
           </div>
 
@@ -52,11 +50,7 @@ export default function SourcesPage() {
           </div>
         </section>
 
-        <PageCta
-          title="继续扩充更多真实案例"
-          href="/explore"
-          label="去浏览"
-        />
+        <PageCta title="继续扩充更多真实案例" href="/explore" label="去浏览" />
       </main>
       <SiteFooter />
     </>
