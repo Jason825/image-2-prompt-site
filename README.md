@@ -2,12 +2,12 @@
 
 `ImagePromptive` 是一个围绕 `Image 2.0` 提示词整理、浏览、搜索与案例展示的轻量内容站。
 
-当前项目重点不是做复杂平台，而是先把这几件事做好：
+当前项目重点不是做复杂平台，而是先把这些事情做好：
 
 - 让用户快速找到可复用的高质量提示词
 - 提供真实案例图、说明和一键复制体验
 - 基于真实数据做热门排序
-- 用尽量低成本、可维护的方式持续上线更新
+- 用低成本、可维护的方式持续上线更新
 
 ## 当前功能
 
@@ -27,7 +27,7 @@
 - `Postgres`
 - `Nginx`
 - `Docker Compose`
-- `GitHub Actions`
+- `Gitee WebHook`
 
 ## 项目结构
 
@@ -65,26 +65,31 @@ npm run dev
 http://localhost:3000
 ```
 
-## 部署方式
+## 当前部署方式
 
 当前采用：
 
 - 腾讯云轻量应用服务器
 - Docker Compose
-- GitHub Actions 自动部署
+- Gitee WebHook 自动部署
 
-发布流程已经打通，日常发布方式就是：
+标准发布流程：
 
 ```bash
 git add .
 git commit -m "中文提交信息"
-git push origin main
+powershell -ExecutionPolicy Bypass -File .\deploy\push-all.ps1
 ```
 
-推送到 `main` 后，GitHub Actions 会自动连接服务器并执行部署脚本。
+说明：
+
+- `origin` 建议指向 `Gitee`
+- `github` 建议指向 `GitHub`
+- 代码先推到 `Gitee`，由 `Gitee` 触发腾讯云自动部署
+- 然后再同步推到 `GitHub`
 
 ## 说明文档
 
-- 项目规则：[AGENTS.md](E:/AI/MyProducts/image-2-prompt-site/AGENTS.md)
-- 产品文档：[PRD_V1.md](E:/AI/MyProducts/image-2-prompt-site/PRD_V1.md)
-- 网站项目说明：[web/README.md](E:/AI/MyProducts/image-2-prompt-site/web/README.md)
+- 项目规则：[AGENTS.md](/E:/AI/MyProducts/image-2-prompt-site/AGENTS.md)
+- 产品文档：[PRD_V1.md](/E:/AI/MyProducts/image-2-prompt-site/PRD_V1.md)
+- 网站项目说明：[web/README.md](/E:/AI/MyProducts/image-2-prompt-site/web/README.md)

@@ -47,13 +47,7 @@ DATABASE_URL=postgresql://postgres:your_password@127.0.0.1:5432/imagepromptive
 - `Postgres` 数据库容器
 - `Nginx` 反向代理容器
 
-默认对外端口：
-
-```bash
-80
-```
-
-## 腾讯云服务器手动部署
+## 腾讯云服务器首次准备
 
 假设你已经把仓库拉到服务器，并进入：
 
@@ -61,185 +55,126 @@ DATABASE_URL=postgresql://postgres:your_password@127.0.0.1:5432/imagepromptive
 cd /www/image-2-prompt-site/web
 ```
 
-### 1. 准备服务器环境变量
+### 1. 准备环境变量
 
 ```bash
 cp .env.server.example .env
-nano .env
 ```
 
-至少把这项改成你自己的数据库密码：
+然后只在服务器本地修改 `.env`，至少设置：
 
 ```bash
 POSTGRES_PASSWORD=your_own_database_password
 ```
 
-### 2. 启动服务
+### 2. 启动网站
 
 ```bash
-docker compose up -d --build
+sudo docker compose up -d --build
 ```
 
 ### 3. 检查状态
 
 ```bash
-docker compose ps
-docker compose logs --tail=100
+sudo docker compose ps
+sudo docker compose logs --tail=100
 ```
 
-## 自动部署
+## 自动部署最终方案
 
-当前最终采用的自动部署方案是：
+当前最终采用：
 
-- `GitHub Actions`
-- `SSH` 登录腾讯云服务器
-- 执行仓库根目录下的 `deploy/deploy.sh`
-
-也就是说，后续不再使用：
-
-- Gitee WebHook
-- 本机部署监听服务
-- Nginx 部署回调接口
+- `Gitee WebHook`
+- 服务器本机监听服务 `deploy/hook_server.py`
+- 执行根目录下的 `deploy/deploy.sh`
 
 ### 仓库中的自动部署文件
 
-- `.github/workflows/deploy.yml`
 - `deploy/deploy.sh`
+- `deploy/hook_server.py`
+- `deploy/hook.env.example`
+- `deploy/imagepromptive-deploy-hook.service`
+- `deploy/push-all.ps1`
 
-### GitHub Secrets
-
-你需要在 GitHub 仓库的 `Settings -> Secrets and variables -> Actions` 中配置：
-
-- `DEPLOY_HOST`
-- `DEPLOY_PORT`
-- `DEPLOY_USER`
-- `DEPLOY_PATH`
-- `DEPLOY_SSH_KEY`
-
-### deploy.sh 的作用
-
-`deploy/deploy.sh` 会自动执行：
-
-1. 进入项目目录
-2. 拉取最新代码
-3. 重建并启动 Docker Compose
-4. 输出容器状态
-
-### 服务器准备
-
-在服务器上需要保证：
+### 服务器准备步骤
 
 ```bash
 cd /www/image-2-prompt-site
 chmod +x deploy/deploy.sh
+cp deploy/hook.env.example deploy/hook.env
 ```
 
-另外，当前 `deploy.sh` 会执行 `sudo docker compose ...`，因此用于部署的服务器用户需要具备无密码执行这条命令的能力。
+然后只在服务器本地修改：
 
-如果仓库远端已经切到 Gitee，那么脚本会按当前 `origin` 拉取；如果保留 GitHub，也会按当前 `origin` 拉取。
+- `deploy/hook.env`
+
+至少设置：
+
+```bash
+HOOK_SECRET=你自己的Webhook密钥
+```
+
+安装并启动 systemd 服务：
+
+```bash
+sudo cp deploy/imagepromptive-deploy-hook.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now imagepromptive-deploy-hook
+```
+
+### Gitee WebHook 设置
+
+在 Gitee 仓库中配置：
+
+- WebHook 地址：`https://imagepromptive.top/deploy-hook`
+- 事件类型：`Push`
+- 密钥：与 `deploy/hook.env` 中的 `HOOK_SECRET` 一致
+
+### Nginx 转发
+
+当前 `nginx/default.conf` 已经预留：
+
+- `https://imagepromptive.top/deploy-hook`
+
+它会转发到服务器本机的部署监听服务。
 
 ### 当前标准发布流程
-
-现在自动部署已经打通，后续发布统一按下面这套流程执行：
-
-1. 在本地完成修改
-2. 本地执行必要验证
-3. 提交代码
-4. 推送到 `main`
-5. GitHub Actions 自动连接服务器并完成部署
-
-常用命令：
 
 ```bash
 git add .
 git commit -m "中文提交信息"
-git push origin main
+powershell -ExecutionPolicy Bypass -File .\deploy\push-all.ps1
 ```
 
-### 如何确认部署成功
+说明：
 
-#### 方法一：看 GitHub Actions
-
-进入仓库：
-
-- `Actions`
-- 选择工作流 `自动部署到腾讯云服务器`
-
-如果整条工作流都是绿色，说明自动部署已成功执行。
-
-#### 方法二：看服务器日志
-
-在服务器执行：
-
-```bash
-cd /www/image-2-prompt-site
-tail -f deploy/logs/deploy.log
-```
-
-如果需要看最近一次部署结果，也可以执行：
-
-```bash
-cd /www/image-2-prompt-site
-tail -n 50 deploy/logs/deploy.log
-```
-
-### 如何手动重新部署
-
-如果没有新提交，但你想手动重跑一次部署：
-
-- 打开 GitHub 仓库 `Actions`
-- 进入 `自动部署到腾讯云服务器`
-- 点击 `Run workflow`
-
-### 常见问题
-
-#### 1. GitHub Actions 成功，但网站没更新
-
-先看服务器上的部署日志，确认：
-
-- `git pull` 是否拉到了最新代码
-- `docker compose up -d --build` 是否成功执行
-
-#### 2. Actions 无法连接服务器
-
-优先检查 GitHub Secrets：
-
-- `DEPLOY_HOST`
-- `DEPLOY_PORT`
-- `DEPLOY_USER`
-- `DEPLOY_PATH`
-- `DEPLOY_SSH_KEY`
-
-#### 3. 部署脚本执行失败
-
-优先检查：
-
-- `/www/image-2-prompt-site/deploy/deploy.sh` 是否有执行权限
-- 服务器当前仓库工作区是否干净
-- `sudo docker compose` 是否可无密码执行
+- `origin` 建议设置为 Gitee
+- `github` 建议设置为 GitHub
+- `push-all.ps1` 会先推 Gitee，再推 GitHub
 
 ## 常用命令
 
 启动或重建：
 
 ```bash
-docker compose up -d --build
+sudo docker compose up -d --build
 ```
 
 查看状态：
 
 ```bash
-docker compose ps
+sudo docker compose ps
 ```
 
 查看日志：
 
 ```bash
-docker compose logs --tail=100
+sudo docker compose logs --tail=100
 ```
 
-停止服务：
+查看部署日志：
 
 ```bash
-docker compose down
+cd /www/image-2-prompt-site
+tail -f deploy/logs/deploy.log
 ```
