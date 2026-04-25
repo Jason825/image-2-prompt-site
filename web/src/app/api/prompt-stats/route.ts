@@ -1,27 +1,38 @@
 import { NextResponse } from "next/server";
-import { getSupabaseAdmin, hasSupabaseServerEnv } from "@/lib/supabase-server";
-import {
-  calculatePromptScore,
-  isPromptEventType,
-  type PromptStatRow,
-} from "@/lib/prompt-stats";
+import { calculatePromptScore, isPromptEventType } from "@/lib/prompt-stats";
+import { getDb, hasDatabaseUrl } from "@/lib/db";
+
+type PromptStatRow = {
+  slug: string;
+  views: number;
+  copies: number;
+  downloads: number;
+  score: number;
+  updated_at: string;
+};
 
 export async function GET() {
-  const supabase = getSupabaseAdmin();
+  const db = getDb();
 
-  if (!supabase || !hasSupabaseServerEnv()) {
+  if (!db || !hasDatabaseUrl()) {
     return NextResponse.json({
       enabled: false,
       items: [] as PromptStatRow[],
     });
   }
 
-  const { data, error } = await supabase
-    .from("prompt_stats")
-    .select("slug, views, copies, downloads, score, updated_at")
-    .order("score", { ascending: false });
+  try {
+    const result = await db.query<PromptStatRow>(
+      `select slug, views, copies, downloads, score, updated_at
+       from prompt_stats
+       order by score desc, updated_at desc`,
+    );
 
-  if (error) {
+    return NextResponse.json({
+      enabled: true,
+      items: result.rows,
+    });
+  } catch {
     return NextResponse.json(
       {
         enabled: true,
@@ -30,17 +41,12 @@ export async function GET() {
       { status: 500 },
     );
   }
-
-  return NextResponse.json({
-    enabled: true,
-    items: (data ?? []) as PromptStatRow[],
-  });
 }
 
 export async function POST(request: Request) {
-  const supabase = getSupabaseAdmin();
+  const db = getDb();
 
-  if (!supabase || !hasSupabaseServerEnv()) {
+  if (!db || !hasDatabaseUrl()) {
     return NextResponse.json({ enabled: false }, { status: 202 });
   }
 
@@ -55,43 +61,45 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "参数不合法" }, { status: 400 });
   }
 
-  const { data: existing, error: fetchError } = await supabase
-    .from("prompt_stats")
-    .select("slug, views, copies, downloads")
-    .eq("slug", slug)
-    .maybeSingle();
+  try {
+    const existingResult = await db.query<{
+      slug: string;
+      views: number;
+      copies: number;
+      downloads: number;
+    }>(
+      `select slug, views, copies, downloads
+       from prompt_stats
+       where slug = $1
+       limit 1`,
+      [slug],
+    );
 
-  if (fetchError) {
-    return NextResponse.json({ error: "读取旧统计失败" }, { status: 500 });
-  }
+    const existing = existingResult.rows[0];
+    const views = (existing?.views ?? 0) + (eventType === "view" ? 1 : 0);
+    const copies = (existing?.copies ?? 0) + (eventType === "copy" ? 1 : 0);
+    const downloads =
+      (existing?.downloads ?? 0) + (eventType === "download" ? 1 : 0);
 
-  const views = (existing?.views ?? 0) + (eventType === "view" ? 1 : 0);
-  const copies = (existing?.copies ?? 0) + (eventType === "copy" ? 1 : 0);
-  const downloads =
-    (existing?.downloads ?? 0) + (eventType === "download" ? 1 : 0);
+    const result = await db.query<PromptStatRow>(
+      `insert into prompt_stats (slug, views, copies, downloads, score, updated_at)
+       values ($1, $2, $3, $4, $5, now())
+       on conflict (slug)
+       do update set
+         views = excluded.views,
+         copies = excluded.copies,
+         downloads = excluded.downloads,
+         score = excluded.score,
+         updated_at = now()
+       returning slug, views, copies, downloads, score, updated_at`,
+      [slug, views, copies, downloads, calculatePromptScore({ views, copies, downloads })],
+    );
 
-  const { data, error } = await supabase
-    .from("prompt_stats")
-    .upsert(
-      {
-        slug,
-        views,
-        copies,
-        downloads,
-        score: calculatePromptScore({ views, copies, downloads }),
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "slug" },
-    )
-    .select("slug, views, copies, downloads, score, updated_at")
-    .single();
-
-  if (error) {
+    return NextResponse.json({
+      enabled: true,
+      item: result.rows[0],
+    });
+  } catch {
     return NextResponse.json({ error: "写入统计失败" }, { status: 500 });
   }
-
-  return NextResponse.json({
-    enabled: true,
-    item: data as PromptStatRow,
-  });
 }
