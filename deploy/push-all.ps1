@@ -6,10 +6,10 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "推送到 Gitee: $GiteeRemote/$Branch"
+Write-Host "Push to Gitee: $GiteeRemote/$Branch"
 git push $GiteeRemote $Branch
 
-Write-Host "推送到 GitHub: $GitHubRemote/$Branch"
+Write-Host "Push to GitHub: $GitHubRemote/$Branch"
 git push $GitHubRemote $Branch
 
-Write-Host "两个远端都已推送完成。"
+Write-Host "Both remotes have been pushed successfully."
