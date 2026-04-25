@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { trackPromptEvent } from "@/lib/track-prompt-event";
 
 type CopyButtonProps = {
   text: string;
   label: string;
   copiedLabel?: string;
   variant?: "primary" | "secondary";
+  promptSlug?: string;
 };
 
 export function CopyButton({
@@ -14,12 +16,16 @@ export function CopyButton({
   label,
   copiedLabel = "已复制",
   variant = "primary",
+  promptSlug,
 }: CopyButtonProps) {
   const [copied, setCopied] = useState(false);
 
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(text);
+      if (promptSlug) {
+        void trackPromptEvent({ slug: promptSlug, eventType: "copy" });
+      }
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1800);
     } catch {

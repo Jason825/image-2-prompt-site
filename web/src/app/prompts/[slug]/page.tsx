@@ -1,4 +1,5 @@
 import { CopyButton } from "@/components/copy-button";
+import { DownloadButton } from "@/components/download-button";
 import { ViewTracker } from "@/components/view-tracker";
 import Image from "next/image";
 import Link from "next/link";
@@ -70,14 +71,13 @@ export default async function PromptDetailPage({
                     text={prompt.prompt}
                     label="复制提示词"
                     copiedLabel="已复制提示词"
+                    promptSlug={prompt.slug}
                   />
-                  <a
+                  <DownloadButton
                     href={prompt.imageSrc}
-                    download
+                    slug={prompt.slug}
                     className="rounded-full border border-[var(--color-line)] bg-white/70 px-5 py-3 text-sm font-medium text-[var(--color-ink)] transition hover:border-[var(--color-brand)]"
-                  >
-                    下载图片
-                  </a>
+                  />
                 </div>
               </section>
 

@@ -2,8 +2,10 @@
 
 import { useEffect } from "react";
 import type { PromptItem } from "@/data/site-data";
+import { trackPromptEvent } from "@/lib/track-prompt-event";
 
 const STORAGE_KEY = "imagepromptive-recent-views";
+const SESSION_TRACK_KEY = "imagepromptive-tracked-views";
 
 type StoredView = {
   slug: string;
@@ -34,6 +36,23 @@ export function ViewTracker({ prompt }: { prompt: PromptItem }) {
       window.dispatchEvent(new CustomEvent("recent-views:changed", { detail: next }));
     } catch {
       // Ignore storage failures.
+    }
+
+    try {
+      const raw = window.sessionStorage.getItem(SESSION_TRACK_KEY);
+      const tracked = raw ? (JSON.parse(raw) as string[]) : [];
+
+      if (tracked.includes(prompt.slug)) {
+        return;
+      }
+
+      window.sessionStorage.setItem(
+        SESSION_TRACK_KEY,
+        JSON.stringify([...tracked, prompt.slug]),
+      );
+      void trackPromptEvent({ slug: prompt.slug, eventType: "view" });
+    } catch {
+      void trackPromptEvent({ slug: prompt.slug, eventType: "view" });
     }
   }, [prompt]);
 

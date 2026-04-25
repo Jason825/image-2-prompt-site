@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { CopyButton } from "./copy-button";
+import { DownloadButton } from "./download-button";
 import type { PromptItem } from "@/data/site-data";
 
 export function PromptCard({
@@ -39,14 +40,13 @@ export function PromptCard({
         </Link>
 
         <div className="flex flex-wrap items-center gap-3 px-5 pb-5">
-          <CopyButton text={item.prompt} label="复制提示词" copiedLabel="已复制提示词" />
-          <a
-            href={item.imageSrc}
-            download
-            className="rounded-full border border-[var(--color-line)] bg-white/70 px-4 py-2 text-sm font-medium text-[var(--color-ink)] transition hover:border-[var(--color-brand)]"
-          >
-            下载图片
-          </a>
+          <CopyButton
+            text={item.prompt}
+            label="复制提示词"
+            copiedLabel="已复制提示词"
+            promptSlug={item.slug}
+          />
+          <DownloadButton href={item.imageSrc} slug={item.slug} />
         </div>
       </div>
     </article>

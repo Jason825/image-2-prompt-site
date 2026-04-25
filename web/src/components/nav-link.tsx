@@ -17,11 +17,20 @@ export function NavLink({
   return (
     <Link
       href={href}
-      className={`transition-colors ${
-        active ? "text-[var(--color-ink)]" : "text-[var(--color-muted)] hover:text-[var(--color-ink)]"
-      }`}
+      className={[
+        "group relative inline-flex items-center rounded-full px-3 py-1.5 text-sm transition duration-200",
+        active
+          ? "bg-[var(--color-brand-soft)] text-[var(--color-brand-deep)]"
+          : "text-[var(--color-muted)] hover:-translate-y-0.5 hover:bg-white/80 hover:text-[var(--color-ink)]",
+      ].join(" ")}
     >
-      {label}
+      <span>{label}</span>
+      <span
+        className={[
+          "absolute inset-x-3 bottom-0 h-px origin-left rounded-full bg-[var(--color-brand)] transition-transform duration-200",
+          active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100",
+        ].join(" ")}
+      />
     </Link>
   );
 }

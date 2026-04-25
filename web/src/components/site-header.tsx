@@ -53,7 +53,7 @@ export function SiteHeader({
             <div>
               <p className="text-lg font-semibold tracking-tight">ImagePromptive</p>
               <p className="text-sm text-[var(--color-muted)]">
-                精选 Image 2.0 提示词与案例，帮助你更快找到可复用的视觉方向。
+                精选 Image 2.0 提示词与案例，帮你更快找到可复用的视觉方向。
               </p>
             </div>
           </Link>
