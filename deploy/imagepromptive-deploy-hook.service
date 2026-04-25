@@ -1,0 +1,18 @@
+[Unit]
+Description=ImagePromptive Deploy Hook Service
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/www/image-2-prompt-site
+EnvironmentFile=/www/image-2-prompt-site/deploy/hook.env
+ExecStart=/usr/bin/python3 /www/image-2-prompt-site/deploy/hook_server.py
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+
