@@ -12,6 +12,7 @@ type HomeFeaturedPromptsProps = {
 
 export function HomeFeaturedPrompts({ prompts }: HomeFeaturedPromptsProps) {
   const [statsMap, setStatsMap] = useState<Record<string, PromptStatRow>>({});
+  const [statsEnabled, setStatsEnabled] = useState(false);
 
   const loadStats = useCallback(async () => {
     try {
@@ -24,8 +25,11 @@ export function HomeFeaturedPrompts({ prompts }: HomeFeaturedPromptsProps) {
       }
 
       const payload = (await response.json()) as {
+        enabled?: boolean;
         items?: PromptStatRow[];
       };
+
+      setStatsEnabled(Boolean(payload.enabled));
 
       if (!payload.items) {
         return;
@@ -76,9 +80,13 @@ export function HomeFeaturedPrompts({ prompts }: HomeFeaturedPromptsProps) {
   const featuredPrompts = useMemo(() => {
     return [...prompts]
       .sort((a, b) => {
-        const scoreDiff =
-          (statsMap[b.slug]?.score ?? b.popularityScore ?? 0) -
-          (statsMap[a.slug]?.score ?? a.popularityScore ?? 0);
+        const scoreA = statsEnabled
+          ? (statsMap[a.slug]?.score ?? 0)
+          : (a.popularityScore ?? 0);
+        const scoreB = statsEnabled
+          ? (statsMap[b.slug]?.score ?? 0)
+          : (b.popularityScore ?? 0);
+        const scoreDiff = scoreB - scoreA;
 
         if (scoreDiff !== 0) {
           return scoreDiff;
@@ -90,7 +98,7 @@ export function HomeFeaturedPrompts({ prompts }: HomeFeaturedPromptsProps) {
         );
       })
       .slice(0, 6);
-  }, [prompts, statsMap]);
+  }, [prompts, statsEnabled, statsMap]);
 
   return (
     <MasonryGrid>

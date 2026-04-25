@@ -34,6 +34,7 @@ export function PromptBrowser({
   const [activeFilter, setActiveFilter] = useState(filters[0] ?? "全部");
   const [sortBy, setSortBy] = useState<SortKey>("popular");
   const [statsMap, setStatsMap] = useState<Record<string, PromptStatRow>>({});
+  const [statsEnabled, setStatsEnabled] = useState(false);
 
   const loadStats = useCallback(async () => {
     try {
@@ -49,6 +50,8 @@ export function PromptBrowser({
         enabled?: boolean;
         items?: PromptStatRow[];
       };
+
+      setStatsEnabled(Boolean(payload.enabled));
 
       if (!payload.items) {
         return;
@@ -126,9 +129,13 @@ export function PromptBrowser({
     }
 
     return [...items].sort((a, b) => {
-      const scoreDiff =
-        (statsMap[b.slug]?.score ?? b.popularityScore ?? 0) -
-        (statsMap[a.slug]?.score ?? a.popularityScore ?? 0);
+      const scoreA = statsEnabled
+        ? (statsMap[a.slug]?.score ?? 0)
+        : (a.popularityScore ?? 0);
+      const scoreB = statsEnabled
+        ? (statsMap[b.slug]?.score ?? 0)
+        : (b.popularityScore ?? 0);
+      const scoreDiff = scoreB - scoreA;
 
       if (scoreDiff !== 0) {
         return scoreDiff;
@@ -139,7 +146,7 @@ export function PromptBrowser({
         prompts.findIndex((item) => item.slug === b.slug)
       );
     });
-  }, [activeFilter, keyword, prompts, sortBy, statsMap]);
+  }, [activeFilter, keyword, prompts, sortBy, statsEnabled, statsMap]);
 
   return (
     <>
