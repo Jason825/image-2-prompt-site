@@ -49,5 +49,5 @@ log "Start deployment for ${PROJECT_DIR}"
 
 run git -C "${PROJECT_DIR}" fetch "${REMOTE_NAME}" "${BRANCH}"
 run git -C "${PROJECT_DIR}" pull --ff-only "${REMOTE_NAME}" "${BRANCH}"
-run docker compose -f "${WEB_DIR}/docker-compose.yml" up -d --build
-run docker compose -f "${WEB_DIR}/docker-compose.yml" ps
+run sudo docker compose -f "${WEB_DIR}/docker-compose.yml" up -d --build
+run sudo docker compose -f "${WEB_DIR}/docker-compose.yml" ps

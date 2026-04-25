@@ -134,6 +134,8 @@ cd /www/image-2-prompt-site
 chmod +x deploy/deploy.sh
 ```
 
+另外，当前 `deploy.sh` 会执行 `sudo docker compose ...`，因此用于部署的服务器用户需要具备无密码执行这条命令的能力。
+
 如果仓库远端已经切到 Gitee，那么脚本会按当前 `origin` 拉取；如果保留 GitHub，也会按当前 `origin` 拉取。
 
 ## 常用命令
