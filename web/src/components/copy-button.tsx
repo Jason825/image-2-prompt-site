@@ -11,6 +11,24 @@ type CopyButtonProps = {
   promptSlug?: string;
 };
 
+function fallbackCopyText(text: string) {
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "true");
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  textarea.style.pointerEvents = "none";
+
+  document.body.appendChild(textarea);
+  textarea.focus();
+  textarea.select();
+
+  const success = document.execCommand("copy");
+  document.body.removeChild(textarea);
+
+  return success;
+}
+
 export function CopyButton({
   text,
   label,
@@ -22,10 +40,20 @@ export function CopyButton({
 
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(text);
+      if (window.isSecureContext && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const success = fallbackCopyText(text);
+
+        if (!success) {
+          throw new Error("copy failed");
+        }
+      }
+
       if (promptSlug) {
         void trackPromptEvent({ slug: promptSlug, eventType: "copy" });
       }
+
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1800);
     } catch {
