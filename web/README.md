@@ -1,10 +1,10 @@
 # ImagePromptive Web
 
-这是 `ImagePromptive` 的前端与接口项目，当前已经按腾讯云轻量应用服务器部署方式准备好。
+这是 `ImagePromptive` 的前端与接口项目，当前部署目标是腾讯云轻量应用服务器。
 
 ## 本地开发
 
-进入项目目录后运行：
+进入 `web` 目录后执行：
 
 ```bash
 npm install
@@ -19,7 +19,7 @@ http://localhost:3000
 
 ## 本地环境变量
 
-本地开发当前最关键的环境变量是：
+本地开发最关键的环境变量是：
 
 ```bash
 DATABASE_URL=postgresql://postgres:your_password@127.0.0.1:5432/imagepromptive
@@ -31,7 +31,7 @@ DATABASE_URL=postgresql://postgres:your_password@127.0.0.1:5432/imagepromptive
 .env.example
 ```
 
-## 服务器部署文件
+## 服务器部署结构
 
 当前仓库已经内置：
 
@@ -41,7 +41,7 @@ DATABASE_URL=postgresql://postgres:your_password@127.0.0.1:5432/imagepromptive
 - `db/prompt_stats.sql`
 - `.env.server.example`
 
-部署结构是：
+运行结构是：
 
 - `Next.js` 应用容器
 - `Postgres` 数据库容器
@@ -53,9 +53,9 @@ DATABASE_URL=postgresql://postgres:your_password@127.0.0.1:5432/imagepromptive
 80
 ```
 
-## 腾讯云轻量服务器部署步骤
+## 腾讯云服务器手动部署
 
-假设你已经把仓库拉到了服务器，并进入：
+假设你已经把仓库拉到服务器，并进入：
 
 ```bash
 cd /www/image-2-prompt-site/web
@@ -63,22 +63,15 @@ cd /www/image-2-prompt-site/web
 
 ### 1. 准备服务器环境变量
 
-先复制服务器环境变量样板：
-
 ```bash
 cp .env.server.example .env
-```
-
-然后编辑：
-
-```bash
 nano .env
 ```
 
-至少把这一项改成你自己的强密码：
+至少把这项改成你自己的数据库密码：
 
 ```bash
-POSTGRES_PASSWORD=你自己的数据库密码
+POSTGRES_PASSWORD=your_own_database_password
 ```
 
 ### 2. 启动服务
@@ -87,20 +80,61 @@ POSTGRES_PASSWORD=你自己的数据库密码
 docker compose up -d --build
 ```
 
-### 3. 检查运行状态
+### 3. 检查状态
 
 ```bash
 docker compose ps
 docker compose logs --tail=100
 ```
 
-### 4. 访问站点
+## 自动部署
 
-如果服务器 `80` 端口已放行，可以直接访问：
+当前最终采用的自动部署方案是：
+
+- `GitHub Actions`
+- `SSH` 登录腾讯云服务器
+- 执行仓库根目录下的 `deploy/deploy.sh`
+
+也就是说，后续不再使用：
+
+- Gitee WebHook
+- 本机部署监听服务
+- Nginx 部署回调接口
+
+### 仓库中的自动部署文件
+
+- `.github/workflows/deploy.yml`
+- `deploy/deploy.sh`
+
+### GitHub Secrets
+
+你需要在 GitHub 仓库的 `Settings -> Secrets and variables -> Actions` 中配置：
+
+- `DEPLOY_HOST`
+- `DEPLOY_PORT`
+- `DEPLOY_USER`
+- `DEPLOY_PATH`
+- `DEPLOY_SSH_KEY`
+
+### deploy.sh 的作用
+
+`deploy/deploy.sh` 会自动执行：
+
+1. 进入项目目录
+2. 拉取最新代码
+3. 重建并启动 Docker Compose
+4. 输出容器状态
+
+### 服务器准备
+
+在服务器上需要保证：
 
 ```bash
-http://你的服务器公网IP
+cd /www/image-2-prompt-site
+chmod +x deploy/deploy.sh
 ```
+
+如果仓库远端已经切到 Gitee，那么脚本会按当前 `origin` 拉取；如果保留 GitHub，也会按当前 `origin` 拉取。
 
 ## 常用命令
 
@@ -126,114 +160,4 @@ docker compose logs --tail=100
 
 ```bash
 docker compose down
-```
-
-## 腾讯云服务器建议
-
-推荐环境：
-
-- Ubuntu 22.04
-- 已安装 Docker / Docker Compose
-- 放行 `22` 和 `80` 端口
-
-如果后续要绑定域名和 HTTPS，可以继续在 Nginx 层接入证书。
-## 自动部署文件
-
-仓库根目录新增了 `deploy` 目录，用于接入 Gitee WebHook 自动部署：
-
-- `deploy/deploy.sh`
-- `deploy/hook_server.py`
-- `deploy/hook.env.example`
-- `deploy/imagepromptive-deploy-hook.service`
-- `deploy/nginx-deploy-hook.conf.example`
-
-这套方案的作用是：
-
-1. Gitee 同步 GitHub 后触发 Push WebHook
-2. 服务器本机监听 `/deploy-hook`
-3. 自动执行 `deploy.sh`
-4. 自动完成 `git pull` 和 `docker compose up -d --build`
-
-## 自动部署接入步骤
-
-### 1. 准备部署环境变量
-
-在服务器上执行：
-
-```bash
-cd /www/image-2-prompt-site
-cp deploy/hook.env.example deploy/hook.env
-nano deploy/hook.env
-```
-
-至少把这一项改掉：
-
-```bash
-DEPLOY_HOOK_SECRET=换成你自己的强密钥
-```
-
-### 2. 赋予脚本执行权限
-
-```bash
-cd /www/image-2-prompt-site
-chmod +x deploy/deploy.sh
-chmod +x deploy/hook_server.py
-```
-
-### 3. 安装 systemd 服务
-
-```bash
-sudo cp deploy/imagepromptive-deploy-hook.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable imagepromptive-deploy-hook
-sudo systemctl start imagepromptive-deploy-hook
-```
-
-检查状态：
-
-```bash
-sudo systemctl status imagepromptive-deploy-hook
-```
-
-### 4. 配置 Nginx 转发
-
-当前仓库中的 `nginx/default.conf` 已经包含 `/deploy-hook` 示例转发：
-
-```nginx
-location = /deploy-hook {
-  proxy_pass http://host.docker.internal:9001;
-}
-```
-
-如果你的线上 Nginx 配置已经改成 HTTPS 版本，请把 `deploy/nginx-deploy-hook.conf.example` 里的这段内容合并到你线上实际使用的 `server` 块里。
-
-修改完成后重建：
-
-```bash
-cd /www/image-2-prompt-site/web
-sudo docker compose up -d --build nginx
-```
-
-### 5. 在 Gitee 配置 WebHook
-
-在 Gitee 仓库中：
-
-- 事件选择 `Push`
-- URL 填：
-  `https://imagepromptive.top/deploy-hook`
-- 密钥填：
-  `deploy/hook.env` 里的 `DEPLOY_HOOK_SECRET`
-
-### 6. 查看自动部署日志
-
-部署监听日志：
-
-```bash
-tail -f /www/image-2-prompt-site/deploy/logs/hook.log
-```
-
-部署执行日志：
-
-```bash
-tail -f /www/image-2-prompt-site/deploy/logs/deploy.log
 ```
