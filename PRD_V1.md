@@ -214,6 +214,7 @@ V1 只统计最关键的三类行为：
 - Python 3 可运行 `hook_server.py`
 - `docker compose` 可被部署用户通过 `sudo` 执行
 - systemd 已启用部署监听服务
+- 部署监听服务需要监听宿主机可被 Docker 容器访问的地址
 
 ### 13.3 Gitee WebHook 要求
 

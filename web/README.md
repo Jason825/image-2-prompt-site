@@ -111,6 +111,7 @@ cp deploy/hook.env.example deploy/hook.env
 至少设置：
 
 ```bash
+HOOK_HOST=0.0.0.0
 HOOK_SECRET=你自己的Webhook密钥
 ```
 
