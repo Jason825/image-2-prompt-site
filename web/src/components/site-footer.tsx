@@ -14,7 +14,7 @@ export function SiteFooter() {
         </div>
 
         <div className="text-left md:text-right">
-          <p>联系邮箱：63484227@qq.com</p>
+          <p>联系邮箱：763484227@qq.com</p>
           <p className="mt-1">站点仍在持续整理与迭代中。</p>
         </div>
       </div>
