@@ -1,12 +1,13 @@
-import { CopyButton } from "@/components/copy-button";
-import { DownloadButton } from "@/components/download-button";
-import { ViewTracker } from "@/components/view-tracker";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { CopyButton } from "@/components/copy-button";
+import { DownloadButton } from "@/components/download-button";
 import { PageCta } from "@/components/page-cta";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { ViewTracker } from "@/components/view-tracker";
+import { proPack } from "@/data/pro-pack";
 import { getRelatedPrompts, prompts } from "@/data/site-data";
 
 export function generateStaticParams() {
@@ -79,6 +80,24 @@ export default async function PromptDetailPage({
                     className="rounded-full border border-[var(--color-line)] bg-white/70 px-5 py-3 text-sm font-medium text-[var(--color-ink)] transition hover:border-[var(--color-brand)]"
                   />
                 </div>
+              </section>
+
+              <section className="rounded-[28px] bg-[var(--color-ink)] p-6 text-white">
+                <p className="text-sm uppercase tracking-[0.18em] text-white/60">
+                  付费精选包
+                </p>
+                <h2 className="mt-3 text-2xl font-semibold tracking-tight">
+                  想要更多同类商业提示词？
+                </h2>
+                <p className="mt-3 text-sm leading-7 text-white/70">
+                  {proPack.shortName} 已整理 50 条高复用提示词，适合批量做海报、封面、UI 和信息图。
+                </p>
+                <Link
+                  href="/pro"
+                  className="mt-5 inline-flex rounded-full bg-white px-5 py-3 text-sm font-medium text-[var(--color-ink)] transition hover:bg-[var(--color-cream)]"
+                >
+                  查看精选包
+                </Link>
               </section>
 
               {prompt.negativePrompt ? (

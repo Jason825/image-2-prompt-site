@@ -54,6 +54,7 @@ export const navItems = [
   { href: "/explore", label: "浏览" },
   { href: "/categories", label: "分类" },
   { href: "/collections", label: "专题" },
+  { href: "/pro", label: "精选包" },
 ];
 
 export const categoryTags = [

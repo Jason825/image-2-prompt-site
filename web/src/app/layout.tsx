@@ -14,8 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "ImagePromptive",
-  description:
-    "精选 Image 2.0 提示词与案例图片，帮助你更快找到可复用的视觉灵感。",
+  description: "精选 Image 2.0 提示词与案例图片，帮助你更快找到可复用的视觉灵感。",
   icons: {
     icon: "/logo-mark.svg",
   },
